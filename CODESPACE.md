@@ -2,16 +2,22 @@
 
 This guide will help you run the SafeMind application in a GitHub Codespace.
 
-## Quick Start (Automated Setup)
+## Quick Start
 
 1. **Create Codespace**
    - Go to your GitHub repository
    - Click **Code** > **Codespaces** > **Create codespace**
-   - Wait for the Codespace to initialize (this may take 3-5 minutes)
+   - Wait for the Codespace to initialize (1-2 minutes)
 
-2. **Automatic Setup**
-   - The devcontainer will automatically install PostgreSQL, Redis, and dependencies
-   - Wait for the setup to complete (check terminal output)
+2. **Run Setup Script**
+   ```bash
+   ./quick-setup.sh
+   ```
+   This will (takes 2-3 minutes):
+   - Install PostgreSQL and Redis
+   - Create and configure the database
+   - Copy environment files
+   - Install all dependencies with progress indicators
 
 3. **Start Services**
 
@@ -40,19 +46,34 @@ This guide will help you run the SafeMind application in a GitHub Codespace.
    - Click the globe icon next to port **3000** to open the frontend
    - Ports 3001 (Backend) and 8000 (ML Service) will be forwarded automatically
 
-## Manual Setup (If Needed)
+## Alternative: Step-by-Step Manual Setup
 
-If the automatic setup doesn't work, run:
+If you prefer to run commands one at a time or the script fails:
 
 ```bash
-./start-codespace.sh
-```
+# Install and start services
+sudo apt-get update
+sudo apt-get install -y postgresql postgresql-contrib redis-server
+sudo service postgresql start
+redis-server --daemonize yes
 
-This will:
-- Install PostgreSQL and Redis
-- Create the database
-- Set up environment files
-- Install all dependencies
+# Create database
+sudo -u postgres psql -c "CREATE DATABASE safemind_db;"
+sudo -u postgres psql -c "CREATE USER safemind WITH PASSWORD 'safemind_dev_password';"
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE safemind_db TO safemind;"
+sudo -u postgres psql -c "ALTER DATABASE safemind_db OWNER TO safemind;"
+sudo -u postgres psql -d safemind_db -c "GRANT ALL ON SCHEMA public TO safemind;"
+
+# Setup environment
+cp server/.env.example server/.env
+cp ml-service/.env.example ml-service/.env
+cp client/.env.example client/.env
+
+# Install dependencies
+cd server && npm install && cd ..
+cd ml-service && pip install -r requirements.txt && cd ..
+cd client && npm install && cd ..
+```
 
 ## Verify Services
 

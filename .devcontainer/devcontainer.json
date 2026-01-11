@@ -11,7 +11,7 @@
     }
   },
 
-  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "postCreateCommand": "echo '✅ Codespace ready! Run ./start-codespace.sh to begin setup.'",
 
   "forwardPorts": [3000, 3001, 8000],
 
