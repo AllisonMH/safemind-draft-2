@@ -4,7 +4,7 @@
   "description": "SafeMind backend server - Youth safety monitoring API",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "nodemon src/index.ts",
+    "dev": "npx nodemon src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "test": "jest --coverage",
