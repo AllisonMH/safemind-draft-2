@@ -5,11 +5,12 @@ import { AppError } from '../middleware/errorHandler';
 import { AuthRequest } from '../middleware/auth';
 import User from '../models/User';
 
-export const register = async (req: AuthRequest, res: Response, next: NextFunction) => {
+export const register = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      res.status(400).json({ errors: errors.array() });
+      return;
     }
 
     const { email, password, firstName, lastName, role } = req.body;
@@ -35,7 +36,7 @@ export const register = async (req: AuthRequest, res: Response, next: NextFuncti
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
       jwtSecret,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+      { expiresIn: '7d' }
     );
 
     res.status(201).json({
@@ -53,11 +54,12 @@ export const register = async (req: AuthRequest, res: Response, next: NextFuncti
   }
 };
 
-export const login = async (req: AuthRequest, res: Response, next: NextFunction) => {
+export const login = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      res.status(400).json({ errors: errors.array() });
+      return;
     }
 
     const { email, password } = req.body;
@@ -80,7 +82,7 @@ export const login = async (req: AuthRequest, res: Response, next: NextFunction)
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
       jwtSecret,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+      { expiresIn: '7d' }
     );
 
     res.json({
@@ -118,7 +120,7 @@ export const getCurrentUser = async (req: AuthRequest, res: Response, next: Next
   }
 };
 
-export const logout = async (req: AuthRequest, res: Response, next: NextFunction) => {
+export const logout = async (_req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     res.json({ message: 'Logged out successfully' });
   } catch (error) {
